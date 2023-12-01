@@ -7,7 +7,7 @@ import itertools as itt
 import json
 import math
 
-from google3.experimental.users.marcoselvi.advent import utils
+from . import utils
 
 
 def day1(lines):

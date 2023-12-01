@@ -5,7 +5,7 @@ import functools as fnt
 import itertools as itt
 import math
 
-from google3.experimental.users.marcoselvi.advent import utils
+from . import utils
 
 
 # --- INTCODE COMPUTER ---

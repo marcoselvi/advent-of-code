@@ -9,7 +9,7 @@ import re
 
 import numpy as np
 
-from google3.experimental.users.marcoselvi.advent import utils
+from . import utils
 
 
 def day1(lines):
@@ -827,4 +827,3 @@ def day25(lines):
   cardloop = loopsize(7, cardkey)
   part1 = fnt.reduce(lambda x, _: trans(doorkey, x), range(cardloop), 1)
   return part1
-
