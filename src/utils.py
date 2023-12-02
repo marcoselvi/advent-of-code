@@ -11,10 +11,7 @@ def raise_(err, msg=''):
 
 def daypath(year, day):
   wd = os.getcwd()
-  if wd.endswith('google3'):
-    return f'experimental/users/marcoselvi/advent/data_{year}/{day}.txt'
-  else:
-    return f'data_{year}/{day}.txt'
+  return f'src/{year}/{day}.txt'
 
 
 def runday(dayfn, year, day):

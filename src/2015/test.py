@@ -1,7 +1,7 @@
 """Tests for Advent of Code 2015 solutions."""
 
 from . import solve
-from . import utils
+from .. import utils
 
 
 def test_day1():

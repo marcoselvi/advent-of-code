@@ -3,7 +3,7 @@
 import sys
 
 from . import solve
-from . import utils
+from .. import utils
 
 
 sys.setrecursionlimit(10000)

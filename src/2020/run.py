@@ -1,11 +1,11 @@
-"""Executor of 2015 Advent of Code solutions."""
+"""Executor of 2020 Advent of Code solutions."""
 import sys
 
 from . import solve
-from . import utils
+from .. import utils
 
 
-sys.setrecursionlimit(1000)
+sys.setrecursionlimit(10000)
 
 
 SELECTOR = {
@@ -38,7 +38,7 @@ SELECTOR = {
 
 
 def main(argv):
-  print(utils.runday(SELECTOR[argv[1]], '2015', argv[1]))
+  print(utils.runday(SELECTOR[argv[1]], '2020', argv[1]))
 
 
 if __name__ == '__main__':

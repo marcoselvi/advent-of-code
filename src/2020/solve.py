@@ -9,7 +9,7 @@ import re
 
 import numpy as np
 
-from . import utils
+from .. import utils
 
 
 def day1(lines):

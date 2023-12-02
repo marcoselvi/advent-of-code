@@ -5,7 +5,7 @@ import functools as fnt
 import itertools as itt
 import math
 
-from . import utils
+from .. import utils
 
 
 # --- INTCODE COMPUTER ---
