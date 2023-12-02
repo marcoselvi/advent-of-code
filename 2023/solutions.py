@@ -43,13 +43,14 @@ def day1_p2():
   return add_up(testlines), add_up(lines)
 
 
+def game_rounds(game):
+  return [[p.strip().split(' ') for p in r.split(',')] for r in game.split(':')[-1].split(';')]
+
 def day2_p1():
   available = {'red': 12, 'green': 13, 'blue': 14}
   def is_possible(game):
-    rounds = game.split(':')[-1].split(';')
-    for r in rounds:
-      for cubes in r.split(','):
-        n, c = cubes.strip().split(' ')
+    for r in game_rounds(game):
+      for n, c in r:
         if available[c] < int(n):
           return False
     return True
@@ -65,10 +66,10 @@ def day2_p1():
 
 def day2_p2():
   def power(game):
-    rounds = [[p.strip().split(' ') for p in r.split(',')] for r in game.split(':')[-1].split(';')]
-    reds = [int(n) for roun in rounds for n, c in roun if c == 'red']
-    blues = [int(n) for roun in rounds for n, c in roun if c == 'blue']
-    greens = [int(n) for roun in rounds for n, c in roun if c == 'green']
+    rounds = game_rounds(game)
+    reds = [int(n) for r in rounds for n, c in r if c == 'red']
+    blues = [int(n) for r in rounds for n, c in r if c == 'blue']
+    greens = [int(n) for r in rounds for n, c in r if c == 'green']
     return max(reds) * max(blues) * max(greens)
   testgames = get_lines('2023/day2.cubes.test1.txt')
   games = get_lines('2023/day2.cubes.txt')
