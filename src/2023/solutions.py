@@ -22,6 +22,9 @@ def get_lines(path):
     return f.readlines()
 
 
+def fst(x_y): return x_y[0]
+
+
 def day1_p1():
   def digits(line):
     numbers = re.findall(r'\d', line)
@@ -179,11 +182,6 @@ def day5_p1():
           return mv + x - mk
       return x
     return fn
-  def seeds_and_maps(rows):
-    seeds = [int(seed.strip()) for seed in rows[0].split(':')[1].strip().split(' ')]
-    maps_str = ''.join(rows[2:])
-    maps = {map_name(map_str): map_fn(map_str.strip()) for map_str in maps_str.split('\n\n')}
-    return seeds, maps
   def lowest_location(rows):
     seeds = [int(seed.strip()) for seed in rows[0].split(':')[1].strip().split(' ')]
     maps_str = ''.join(rows[2:])
@@ -194,8 +192,6 @@ def day5_p1():
   return lowest_location(testrows), lowest_location(rows)
 
 def day5_p2():
-  def map_name(map_str):
-    return map_str.split(':')[0].split(' ')[0].strip()
   def map_ranges(map_str):
     range_values = list(filter(None, map_str.split('\n')[1:]))
     return [list(map(int, ran.strip().split(' '))) for ran in range_values]
@@ -208,17 +204,14 @@ def day5_p2():
           return [(new_rk, mk + ms - rk)] + bisect_range((mk + ms, rs - mk - ms + rk), m_maps)
         return [(new_rk, rs)]
     return [(rk, rs)]
-  def ranges_to_ranges(ranges, m):
-    _, m_maps = m
-    return [new_range for r in ranges for new_range in bisect_range(r, m_maps)]
-  def min_of_ranges(ranges):
-    return min(rk for rk, _ in ranges)
+  def ranges_to_ranges(seed_ranges, map_ranges):
+    return [new_range for r in seed_ranges for new_range in bisect_range(r, map_ranges)]
   def lowest_location(rows):
     seed_values = list(map(int, rows[0].split(':')[1].strip().split(' ')))
     seed_ranges = list(zip(seed_values[::2], seed_values[1::2]))
     maps_str = ''.join(rows[2:])
-    maps = {map_name(map_str): map_ranges(map_str) for map_str in maps_str.split('\n\n')}
-    return min_of_ranges(fnt.reduce(ranges_to_ranges, maps.items(), seed_ranges))
+    maps = list(map(map_ranges, maps_str.split('\n\n')))
+    return min(map(fst, fnt.reduce(ranges_to_ranges, maps, seed_ranges)))
   testrows = get_lines('src/2023/day5.seedmaps.test1.txt')
   rows = get_lines('src/2023/day5.seedmaps.txt')
   return lowest_location(testrows), lowest_location(rows)
