@@ -185,14 +185,10 @@ def day5_p1():
     maps = {map_name(map_str): map_fn(map_str.strip()) for map_str in maps_str.split('\n\n')}
     return seeds, maps
   def lowest_location(rows):
-    seeds, maps = seeds_and_maps(rows)
-    return min(maps['humidity-to-location'](
-               maps['temperature-to-humidity'](
-               maps['light-to-temperature'](
-               maps['water-to-light'](
-               maps['fertilizer-to-water'](
-               maps['soil-to-fertilizer'](
-               maps['seed-to-soil'](seed))))))) for seed in seeds)
+    seeds = [int(seed.strip()) for seed in rows[0].split(':')[1].strip().split(' ')]
+    maps_str = ''.join(rows[2:])
+    maps = [(map_name(map_str), map_fn(map_str.strip())) for map_str in maps_str.split('\n\n')]
+    return min(fnt.reduce(lambda s, m: m[1](s), maps, seed) for seed in seeds)
   testrows = get_lines('src/2023/day5.seedmaps.test1.txt')
   rows = get_lines('src/2023/day5.seedmaps.txt')
   return lowest_location(testrows), lowest_location(rows)
