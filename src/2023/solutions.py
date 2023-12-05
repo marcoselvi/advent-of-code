@@ -169,10 +169,63 @@ def day4_p2():
 
 
 def day5_p1():
-  pass
+  def map_name(map_str):
+    return map_str.split(':')[0].split(' ')[0].strip()
+  def map_fn(map_str):
+    range_values = list(filter(None, map_str.split('\n')[1:]))
+    def fn(x):
+      for mv, mk, s in [map(int, ran.strip().split(' ')) for ran in range_values]:
+        if mk <= x < mk+s:
+          return mv + x - mk
+      return x
+    return fn
+  def seeds_and_maps(rows):
+    seeds = [int(seed.strip()) for seed in rows[0].split(':')[1].strip().split(' ')]
+    maps_str = ''.join(rows[2:])
+    maps = {map_name(map_str): map_fn(map_str.strip()) for map_str in maps_str.split('\n\n')}
+    return seeds, maps
+  def lowest_location(rows):
+    seeds, maps = seeds_and_maps(rows)
+    return min(maps['humidity-to-location'](
+               maps['temperature-to-humidity'](
+               maps['light-to-temperature'](
+               maps['water-to-light'](
+               maps['fertilizer-to-water'](
+               maps['soil-to-fertilizer'](
+               maps['seed-to-soil'](seed))))))) for seed in seeds)
+  testrows = get_lines('src/2023/day5.seedmaps.test1.txt')
+  rows = get_lines('src/2023/day5.seedmaps.txt')
+  return lowest_location(testrows), lowest_location(rows)
 
 def day5_p2():
-  pass
+  def map_name(map_str):
+    return map_str.split(':')[0].split(' ')[0].strip()
+  def map_ranges(map_str):
+    range_values = list(filter(None, map_str.split('\n')[1:]))
+    return [list(map(int, ran.strip().split(' '))) for ran in range_values]
+  def bisect_range(r, m_maps):
+    rk, rs = r
+    for mv, mk, ms in m_maps:
+      if mk <= rk < mk + ms:
+        new_rk = mv + rk - mk
+        if rk + rs >= mk + ms:
+          return [(new_rk, mk + ms - rk)] + bisect_range((mk + ms, rs - mk - ms + rk), m_maps)
+        return [(new_rk, rs)]
+    return [(rk, rs)]
+  def ranges_to_ranges(ranges, m):
+    _, m_maps = m
+    return [new_range for r in ranges for new_range in bisect_range(r, m_maps)]
+  def min_of_ranges(ranges):
+    return min(rk for rk, _ in ranges)
+  def lowest_location(rows):
+    seed_values = list(map(int, rows[0].split(':')[1].strip().split(' ')))
+    seed_ranges = list(zip(seed_values[::2], seed_values[1::2]))
+    maps_str = ''.join(rows[2:])
+    maps = {map_name(map_str): map_ranges(map_str) for map_str in maps_str.split('\n\n')}
+    return min_of_ranges(fnt.reduce(ranges_to_ranges, maps.items(), seed_ranges))
+  testrows = get_lines('src/2023/day5.seedmaps.test1.txt')
+  rows = get_lines('src/2023/day5.seedmaps.txt')
+  return lowest_location(testrows), lowest_location(rows)
 
 
 def day6_p1():
