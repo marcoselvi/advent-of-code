@@ -218,10 +218,30 @@ def day5_p2():
 
 
 def day6_p1():
-  pass
+  def process_data(row):
+    return [int(n.strip()) for n in row.split(':')[1].strip().split(' ') if n]
+  def scores(time):
+    return [n * (time - n) for n in range(time)]
+  def better_times(rows):
+    races = list(zip(*map(process_data, rows)))
+    all_scores = [(best, scores(time)) for time, best in races]
+    return fnt.reduce(lambda x, y: x*y, (len([s for s in ss if s > best]) for best, ss in all_scores), 1)
+  testrows = get_lines('src/2023/day6.boatsboatsboats.test1.txt')
+  rows = get_lines('src/2023/day6.boatsboatsboats.txt')
+  return better_times(testrows), better_times(rows)
 
 def day6_p2():
-  pass
+  def process_data(row):
+    numbers = [n.strip() for n in row.split(':')[1].strip().split(' ')]
+    return int(''.join(numbers))
+  def scores(time):
+    return [n * (time - n) for n in range(time)]
+  def better_times(rows):
+    time, best = process_data(rows[0]), process_data(rows[1])
+    return len([s for s in scores(time) if s > best])
+  testrows = get_lines('src/2023/day6.boatsboatsboats.test1.txt')
+  rows = get_lines('src/2023/day6.boatsboatsboats.txt')
+  return better_times(testrows), better_times(rows)
 
 
 def day7_p1():
