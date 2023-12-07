@@ -1,3 +1,4 @@
+from collections import Counter
 import re
 
 import functools as fnt
@@ -245,10 +246,55 @@ def day6_p2():
 
 
 def day7_p1():
-  pass
+  def card_values(h):
+    return tuple(int({'A': 14, 'K': 13, 'Q': 12, 'J': 11, 'T': 10}.get(c, c))
+                 for c in h)
+  def hand_value(h):
+    h_c = Counter(h)
+    max_c = max(h_c.values())
+    return (6 if max_c == 5 else
+            5 if max_c == 4 else
+            4 if len(h_c) == 2 and max_c == 3 else
+            3 if max_c == 3 else
+            2 if len(h_c) == 3 and max_c == 2 else
+            1 if max_c == 2 else
+            0)
+  def hand_sorting(hand_bet):
+    hand, _ = hand_bet
+    return (hand_value(hand), card_values(hand))
+  def winnings(rows):
+    return sum((i+1)*int(bet) for i, (hand, bet)
+               in enumerate(sorted([row.strip().split(' ') for row in rows],
+                                   key=hand_sorting)))
+  testrows = get_lines('src/2023/day7.poker.test1.txt')
+  rows = get_lines('src/2023/day7.poker.txt')
+  return winnings(testrows), winnings(rows)
 
 def day7_p2():
-  pass
+  def card_values(h):
+    return tuple(int({'A': 14, 'K': 13, 'Q': 12, 'J': 1, 'T': 10}.get(c, c))
+                 for c in h)
+  def hand_value(h):
+    js = Counter(h).get('J', 0)
+    h_c = Counter(c for c in h if c != 'J')
+    max_c = max(list(h_c.values()) or [0])
+    return (6 if max_c + js == 5 else
+            5 if max_c + js == 4 else
+            4 if len(h_c) == 2 and max_c + js == 3 else
+            3 if max_c + js == 3 else
+            2 if len(h_c) == 3 and max_c + js == 2 else
+            1 if max_c + js == 2 else
+            0)
+  def hand_sorting(hand_bet):
+    hand, _ = hand_bet
+    return (hand_value(hand), card_values(hand))
+  def winnings(rows):
+    return sum((i+1)*int(bet) for i, (hand, bet)
+               in enumerate(sorted([row.strip().split(' ') for row in rows],
+                                   key=hand_sorting)))
+  testrows = get_lines('src/2023/day7.poker.test1.txt')
+  rows = get_lines('src/2023/day7.poker.txt')
+  return winnings(testrows), winnings(rows)
 
 
 def day8_p1():
