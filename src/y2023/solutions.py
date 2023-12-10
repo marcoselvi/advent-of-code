@@ -49,7 +49,7 @@ def day1():
   def add_up(digits, rows):
     return sum(digits(row) for row in rows)
 
-  rows = get_rows('src/y2023/day1.calibration.txt')
+  rows = get_rows('data/y2023/day1.calibration.txt')
 
   def p1():
     def digits(row):
@@ -73,7 +73,7 @@ def day2():
   def game_rounds(game):
     return [[p.strip().split(' ') for p in r.split(',')] for r in game.split(':')[-1].split(';')]
 
-  games = get_rows('src/y2023/day2.cubes.txt')
+  games = get_rows('data/y2023/day2.cubes.txt')
 
   def p1():
     available = {'red': 12, 'green': 13, 'blue': 14}
@@ -107,7 +107,7 @@ def day3():
     (xs, y), (sx, sy) = xs_y, sx_sy
     return (min(xs)-1 <= sx <= max(xs)+1) and (y-1 <= sy <= y+1)
 
-  rows = get_rows('src/y2023/day3.engine.txt')
+  rows = get_rows('data/y2023/day3.engine.txt')
 
   def p1():
     def match(numbers, symbols):
@@ -126,7 +126,7 @@ def day3():
       elements = [(elem, (x, j)) for j, row in enumerate(rows) for elem, x in row_elements(row.strip())]
       return ([(int(elem), x_y) for elem, x_y in elements if elem.isdigit()],
               [(elem, x_y) for elem, x_y in elements if not elem.isdigit()])
-    rows = get_rows('src/y2023/day3.engine.txt')
+    rows = get_rows('data/y2023/day3.engine.txt')
     # schema: (number, ((xs,), y)), (symbol, (x, y))
     return sum(match(*numbers_and_symbols(rows)))
 
@@ -161,7 +161,7 @@ def day3():
 
 def day4():
 
-  rows = get_rows('src/y2023/day4.scratchcards.txt')
+  rows = get_rows('data/y2023/day4.scratchcards.txt')
 
   def p1():
     def points(row):
@@ -195,7 +195,7 @@ def day4():
 
 def day5():
 
-  rows = get_rows('src/y2023/day5.seedmaps.txt')
+  rows = get_rows('data/y2023/day5.seedmaps.txt')
 
   def p1():
     def map_name(map_str):
@@ -243,7 +243,7 @@ def day5():
 
 def day6():
 
-  rows = get_rows('src/y2023/day6.boatsboatsboats.txt')
+  rows = get_rows('data/y2023/day6.boatsboatsboats.txt')
 
   def p1():
     def process_data(row):
@@ -272,7 +272,7 @@ def day6():
 
 def day7():
 
-  rows = get_rows('src/y2023/day7.poker.txt')
+  rows = get_rows('data/y2023/day7.poker.txt')
 
   def p1():
     def card_values(h):
@@ -326,7 +326,7 @@ def day7():
 
 def day8():
 
-  rows = get_rows('src/y2023/day8.maps.txt')
+  rows = get_rows('data/y2023/day8.maps.txt')
 
   def p1():
     def traverse(rows):
@@ -369,7 +369,7 @@ def day9():
   def parse(rows):
     return [list(map(int, row.strip().split(' '))) for row in rows]
 
-  parsed_rows = parse(get_rows('src/y2023/day9.oasis.txt'))
+  parsed_rows = parse(get_rows('data/y2023/day9.oasis.txt'))
 
   def p1():
     def subseq(seq):
@@ -410,7 +410,7 @@ def day10():
   def parse(rows):
     return {(x, y): pipe for y, row in enumerate(rows) for x, pipe in enumerate(row)}
 
-  pipes = parse(get_rows('src/y2023/day10.pipes.txt'))
+  pipes = parse(get_rows('data/y2023/day10.pipes.txt'))
 
   def connect(x_y):
     p = pipes[x_y]
