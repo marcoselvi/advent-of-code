@@ -1,7 +1,9 @@
 from collections import Counter
+import math
 import re
 
 import functools as fnt
+import itertools as it
 
 
 WORD_TO_DIGIT_MAP = {
@@ -298,10 +300,42 @@ def day7_p2():
 
 
 def day8_p1():
-  pass
+  def traverse(rows):
+    instructions = rows[0].strip()
+    graph = {node.strip(): tuple(left_right.strip().strip('(').strip(')').split(', '))
+             for node, left_right in [row.split(' = ') for row in rows[2:]]}
+    steps = 0
+    node = 'AAA'
+    for lr in it.cycle(instructions):
+      node = graph[node][0] if lr == 'L' else graph[node][1]
+      steps += 1
+      if node == 'ZZZ':
+        return steps
+  testrows = get_lines('src/2023/day8.maps.test1.txt')
+  rows = get_lines('src/2023/day8.maps.txt')
+  return traverse(testrows), traverse(rows)
 
 def day8_p2():
-  pass
+
+  def traverse(rows):
+    instructions = rows[0].strip()
+    graph = {node.strip(): tuple(left_right.strip().strip('(').strip(')').split(', '))
+             for node, left_right in [row.split(' = ') for row in rows[2:]]}
+
+    def unroll(node):
+      steps = 0
+      for lr in it.cycle(instructions):
+        node = graph[node][0] if lr == 'L' else graph[node][1]
+        steps += 1
+        if node.endswith('Z'):
+          return steps
+
+    nodes = [node for node in graph.keys() if node.endswith('A')]
+    return math.lcm(*(unroll(node) for node in graph.keys() if node.endswith('A')))
+
+  testrows = get_lines('src/2023/day8.maps.test2.txt')
+  rows = get_lines('src/2023/day8.maps.txt')
+  return traverse(testrows), traverse(rows)
 
 
 def day9_p1():
@@ -424,28 +458,28 @@ def day25_p2():
 
 
 if __name__ == '__main__':
-  print('Day 1 solutions:', day1_p1(), day1_p2())
-  print('Day 2 solutions:', day2_p1(), day2_p2())
-  print('Day 3 solutions:', day3_p1(), day3_p2())
-  print('Day 4 solutions:', day4_p1(), day4_p2())
-  print('Day 5 solutions:', day5_p1(), day5_p2())
-  print('Day 6 solutions:', day6_p1(), day6_p2())
-  print('Day 7 solutions:', day7_p1(), day7_p2())
+  # print('Day 1 solutions:', day1_p1(), day1_p2())
+  # print('Day 2 solutions:', day2_p1(), day2_p2())
+  # print('Day 3 solutions:', day3_p1(), day3_p2())
+  # print('Day 4 solutions:', day4_p1(), day4_p2())
+  # print('Day 5 solutions:', day5_p1(), day5_p2())
+  # print('Day 6 solutions:', day6_p1(), day6_p2())
+  # print('Day 7 solutions:', day7_p1(), day7_p2())
   print('Day 8 solutions:', day8_p1(), day8_p2())
   print('Day 9 solutions:', day9_p1(), day9_p2())
   print('Day 10 solutions:', day10_p1(), day10_p2())
-  print('Day 11 solutions:', day11_p1(), day11_p2())
-  print('Day 12 solutions:', day12_p1(), day12_p2())
-  print('Day 13 solutions:', day13_p1(), day13_p2())
-  print('Day 14 solutions:', day14_p1(), day14_p2())
-  print('Day 15 solutions:', day15_p1(), day15_p2())
-  print('Day 16 solutions:', day16_p1(), day16_p2())
-  print('Day 17 solutions:', day17_p1(), day17_p2())
-  print('Day 18 solutions:', day18_p1(), day18_p2())
-  print('Day 19 solutions:', day19_p1(), day19_p2())
-  print('Day 20 solutions:', day20_p1(), day20_p2())
-  print('Day 21 solutions:', day21_p1(), day21_p2())
-  print('Day 22 solutions:', day22_p1(), day22_p2())
-  print('Day 23 solutions:', day23_p1(), day23_p2())
-  print('Day 24 solutions:', day24_p1(), day24_p2())
-  print('Day 25 solutions:', day25_p1(), day25_p2())
+  # print('Day 11 solutions:', day11_p1(), day11_p2())
+  # print('Day 12 solutions:', day12_p1(), day12_p2())
+  # print('Day 13 solutions:', day13_p1(), day13_p2())
+  # print('Day 14 solutions:', day14_p1(), day14_p2())
+  # print('Day 15 solutions:', day15_p1(), day15_p2())
+  # print('Day 16 solutions:', day16_p1(), day16_p2())
+  # print('Day 17 solutions:', day17_p1(), day17_p2())
+  # print('Day 18 solutions:', day18_p1(), day18_p2())
+  # print('Day 19 solutions:', day19_p1(), day19_p2())
+  # print('Day 20 solutions:', day20_p1(), day20_p2())
+  # print('Day 21 solutions:', day21_p1(), day21_p2())
+  # print('Day 22 solutions:', day22_p1(), day22_p2())
+  # print('Day 23 solutions:', day23_p1(), day23_p2())
+  # print('Day 24 solutions:', day24_p1(), day24_p2())
+  # print('Day 25 solutions:', day25_p1(), day25_p2())
