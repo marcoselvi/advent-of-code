@@ -17,6 +17,10 @@ def get_rows(path):
 def fst(x_y): return x_y[0]
 
 
+def join(xss):
+  return (x for xs in xss for x in xs)
+
+
 def memoise(f):
   memo = {}
   def g(x):
@@ -482,11 +486,30 @@ def day10():
 
 
 def day11():
+
+  def expand_universe(factor, gxs, empty_rows, empty_colums):
+    def expand_x(gxs, empty_x):
+      return [((x+factor, y) if x > empty_x else (x, y)) for x, y in gxs]
+    def expand_y(gxs, empty_y):
+      return [((x, y+factor) if y > empty_y else (x, y)) for x, y in gxs]
+    return fnt.reduce(expand_y, [y+i*factor for i, y in enumerate(empty_rows)],
+                      fnt.reduce(expand_x, [x+i*factor for i, x in enumerate(empty_colums)], gxs))
+
+  def distance(g1, g2):
+    return sum((abs(g1[0] - g2[0]), abs(g1[1] - g2[1])))
+
+  rows = [r.strip() for r in get_rows('data/y2023/day11.galaxies.txt')]
+  galaxies = [(x, y) for y, row in enumerate(rows) for x, ch in enumerate(row) if ch == '#']
+  empty_rows = [y for y, row in enumerate(rows) if set(row) == {'.'}]
+  empty_colums = [x for x, col in enumerate(zip(*rows)) if set(col) == {'.'}]
+
   def p1():
-    pass
+    gxs = expand_universe(1, galaxies, empty_rows, empty_colums)
+    return sum(distance(g1, g2) for i, g1 in enumerate(gxs) for g2 in gxs[i+1:])
 
   def p2():
-    pass
+    gxs = expand_universe(int(1e6) - 1, galaxies, empty_rows, empty_colums)
+    return sum(distance(g1, g2) for i, g1 in enumerate(gxs) for g2 in gxs[i+1:])
 
   return p1(), p2()
 
