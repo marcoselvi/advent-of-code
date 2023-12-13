@@ -18,17 +18,15 @@ def fst(x_y): return x_y[0]
 
 
 def join(xss):
-  return (x for xs in xss for x in xs)
+  return [x for xs in xss for x in xs]
 
 
 def memoise(f):
   memo = {}
-  def g(x):
-    if x in memo:
-      return memo[x]
-    y = f(x)
-    memo[x] = y
-    return y
+  def g(*x):
+    if x not in memo:
+      memo[x] = f(*x)
+    return memo[x]
   return g
 
 def raise_(e):
@@ -516,11 +514,30 @@ def day11():
 
 def day12():
 
+  rows = [r.strip().split(' ') for r in get_rows('data/y2023/day12.springs.test1.txt')]
+  rows = [r.strip().split(' ') for r in get_rows('data/y2023/day12.springs.txt')]
+
+  def match(s, g):
+    return s[:g].replace('?', '#') == '#'*g and (len(s) == g or s[g] != '#')
+  @memoise
+  def case_dot(ss, gg, i, j):
+    return dynamic(ss, gg, i, j+1)
+  @memoise
+  def case_sharp(ss, gg, i, j):
+    return dynamic(ss, gg, i+1, j+gg[i]+1) if match(ss[j:], gg[i]) else 0
+  @memoise
+  def dynamic(ss, gg, i, j):
+    if i >= len(gg): return int('#' not in ss[j:])
+    if j >= len(ss) and i < len(gg): return 0
+    return (case_dot(ss, gg, i, j) if ss[j] == '.' else
+            case_sharp(ss, gg, i, j) if ss[j] == '#' else
+            case_dot(ss, gg, i, j) + case_sharp(ss, gg, i, j))
+
   def p1():
-    pass
+    return sum(dynamic(string, tuple(map(int, groups.split(','))), 0, 0) for string, groups in rows)
 
   def p2():
-    pass
+    return sum(dynamic('?'.join([string]*5), tuple(map(int, ','.join([groups]*5).split(','))), 0, 0) for string, groups in rows)
 
   return p1(), p2()
 
@@ -679,8 +696,8 @@ if __name__ == '__main__':
   # print('Day 8 solutions:', day8())
   # print('Day 9 solutions:', day9())
   # print('Day 10 solutions:', day10())
-  print('Day 11 solutions:', day11())
-  # print('Day 12 solutions:', day12())
+  # print('Day 11 solutions:', day11())
+  print('Day 12 solutions:', day12())
   # print('Day 13 solutions:', day13())
   # print('Day 14 solutions:', day14())
   # print('Day 15 solutions:', day15())
