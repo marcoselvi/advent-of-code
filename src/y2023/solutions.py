@@ -543,7 +543,6 @@ def day12():
 
 def day13():
 
-  rows = [r.strip() for r in get_rows('data/y2023/day13.mirrors.test1.txt')]
   rows = [r.strip() for r in get_rows('data/y2023/day13.mirrors.txt')]
 
   @memoise
