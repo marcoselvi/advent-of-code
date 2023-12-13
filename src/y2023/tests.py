@@ -50,7 +50,7 @@ def test_day12():
 
 
 def test_day13():
-  assert solutions.day13() == ()
+  assert solutions.day13() == (41859, 30842)
 
 
 def test_day14():

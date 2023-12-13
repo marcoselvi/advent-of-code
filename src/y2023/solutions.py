@@ -514,19 +514,18 @@ def day11():
 
 def day12():
 
-  rows = [r.strip().split(' ') for r in get_rows('data/y2023/day12.springs.test1.txt')]
   rows = [r.strip().split(' ') for r in get_rows('data/y2023/day12.springs.txt')]
 
   def match(s, g):
     return s[:g].replace('?', '#') == '#'*g and (len(s) == g or s[g] != '#')
   @memoise
   def case_dot(ss, gg, i, j):
-    return dynamic(ss, gg, i, j+1)
+    return consume(ss, gg, i, j+1)
   @memoise
   def case_sharp(ss, gg, i, j):
-    return dynamic(ss, gg, i+1, j+gg[i]+1) if match(ss[j:], gg[i]) else 0
+    return consume(ss, gg, i+1, j+gg[i]+1) if match(ss[j:], gg[i]) else 0
   @memoise
-  def dynamic(ss, gg, i, j):
+  def consume(ss, gg, i, j):
     if i >= len(gg): return int('#' not in ss[j:])
     if j >= len(ss) and i < len(gg): return 0
     return (case_dot(ss, gg, i, j) if ss[j] == '.' else
@@ -534,21 +533,56 @@ def day12():
             case_dot(ss, gg, i, j) + case_sharp(ss, gg, i, j))
 
   def p1():
-    return sum(dynamic(string, tuple(map(int, groups.split(','))), 0, 0) for string, groups in rows)
+    return sum(consume(string, tuple(map(int, groups.split(','))), 0, 0) for string, groups in rows)
 
   def p2():
-    return sum(dynamic('?'.join([string]*5), tuple(map(int, ','.join([groups]*5).split(','))), 0, 0) for string, groups in rows)
+    return sum(consume('?'.join([string]*5), tuple(map(int, ','.join([groups]*5).split(','))), 0, 0) for string, groups in rows)
 
   return p1(), p2()
 
 
 def day13():
 
+  rows = [r.strip() for r in get_rows('data/y2023/day13.mirrors.test1.txt')]
+  rows = [r.strip() for r in get_rows('data/y2023/day13.mirrors.txt')]
+
+  @memoise
+  def transpose(lines):
+    return tuple(''.join(c) for c in zip(*lines))
+
+  def split_pattern(ps, row):
+    return (ps[:-1] + [ps[-1] + (row,)]) if row else (ps + [()])
+  patterns = fnt.reduce(split_pattern, rows[1:], [(rows[0],)])
+
+  @memoise
+  def mirrored(pattern, i):
+    return all(a == b for a, b in zip(reversed(pattern[:i]), pattern[i:]))
+
+  @memoise
+  def mirrors(pattern):
+    return ([100*i for i in range(1, len(pattern)) if mirrored(pattern, i)] +
+            [i for i in range(1, len(transpose(pattern))) if mirrored(transpose(pattern), i)])
+
   def p1():
-    pass
+    return sum(mirrors(tuple(pattern))[0] for pattern in patterns)
+
+  def differ_by_1(l1, l2):
+    return sum(ch1 == ch2 for ch1, ch2 in zip(l1, l2)) == len(l1)-1
+
+  def smudge(fn, pattern):
+    orig = set(mirrors(fn(pattern)))
+    for i, p1 in enumerate(pattern):
+      for p2 in pattern[i+1:]:
+        if differ_by_1(p1, p2):
+          ms = set(mirrors(fn(pattern[:i] + (p2,) + pattern[i+1:])))
+          if ms - orig:
+            return (ms - orig).pop()
+
+  def clean(pattern):
+    return smudge(lambda x: x, pattern) or smudge(transpose, transpose(pattern))
 
   def p2():
-    pass
+    return sum(clean(pattern) for pattern in patterns)
 
   return p1(), p2()
 
@@ -697,8 +731,8 @@ if __name__ == '__main__':
   # print('Day 9 solutions:', day9())
   # print('Day 10 solutions:', day10())
   # print('Day 11 solutions:', day11())
-  print('Day 12 solutions:', day12())
-  # print('Day 13 solutions:', day13())
+  # print('Day 12 solutions:', day12())
+  print('Day 13 solutions:', day13())
   # print('Day 14 solutions:', day14())
   # print('Day 15 solutions:', day15())
   # print('Day 16 solutions:', day16())
