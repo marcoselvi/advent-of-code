@@ -29,6 +29,12 @@ def memoise(f):
     return memo[x]
   return g
 
+
+@memoise
+def transpose(lines):
+  return tuple(''.join(c) for c in zip(*lines))
+
+
 def raise_(e):
   raise ValueError(e)
 
@@ -545,10 +551,6 @@ def day13():
 
   rows = [r.strip() for r in get_rows('data/y2023/day13.mirrors.txt')]
 
-  @memoise
-  def transpose(lines):
-    return tuple(''.join(c) for c in zip(*lines))
-
   def split_pattern(ps, row):
     return (ps[:-1] + [ps[-1] + (row,)]) if row else (ps + [()])
   patterns = fnt.reduce(split_pattern, rows[1:], [(rows[0],)])
@@ -588,11 +590,62 @@ def day13():
 
 def day14():
 
+  rows = tuple(r.strip() for r in get_rows('data/y2023/day14.rocks.txt'))
+
+  def move_rock(i, column):
+    for j, r in enumerate(column[i+1:]):
+      if r == '#':
+        return move_rocks(i+j+2, column)
+      if r == 'O':
+        return move_rocks(i+1, column[:i] + 'O' + column[i+1:j+i+1] + '.' + column[j+i+2:])
+    return move_rocks(i+1, column)
+
+  def move_rocks(i, column):
+    if i >= len(column):
+      return column
+    if column[i] != '.':
+      return move_rocks(i+1, column)
+    for j, r in enumerate(column[i+1:]):
+      if r == '#':
+        return move_rocks(i+j+2, column)
+      if r == 'O':
+        return move_rocks(i+1, column[:i] + 'O' + column[i+1:j+i+1] + '.' + column[j+i+2:])
+    return column
+
+  def load(pattern):
+    return sum((i+1)*row.count('O') for i, row in enumerate(reversed(pattern)))
+
   def p1():
-    pass
+    moved = transpose(move_rocks(0, column) for column in transpose(rows))
+    return load(moved)
 
   def p2():
-    pass
+    next_d = {'n': 'w', 'w': 's', 's': 'e', 'e': 'n'}
+    N = 1000000000 * 4
+
+    def flip(pattern):
+      return tuple(map(lambda p: ''.join(reversed(p)), pattern))
+
+    def cycle_rocks(d, pattern):
+      def cycle_step(lines):
+        return tuple(move_rocks(0, line) for line in lines)
+      return (transpose(cycle_step(transpose(pattern))) if d == 'n' else
+              cycle_step(pattern) if d == 'w' else
+              transpose(flip(cycle_step(flip(transpose(pattern))))) if d == 's' else
+              flip(cycle_step(flip(pattern))))
+
+    def cycle(c, d, pattern, seen):
+      if c == N:
+        return pattern
+      pattern = cycle_rocks(d, pattern)
+      if (d, pattern) in seen and len(seen[(d, pattern)]) == 2:
+        burn, rep = seen[(d, pattern)]
+        return cycle(N - (N - burn) % (rep - burn), next_d[d], pattern, {})
+      return cycle(c+1, next_d[d], pattern,
+                   ((seen | {(d, pattern): [c]}) if (d, pattern) not in seen else
+                    (seen | {(d, pattern): seen[(d, pattern)] + [c]})))
+
+    return load(cycle(1, 'n', rows, {}))
 
   return p1(), p2()
 
@@ -731,8 +784,8 @@ if __name__ == '__main__':
   # print('Day 10 solutions:', day10())
   # print('Day 11 solutions:', day11())
   # print('Day 12 solutions:', day12())
-  print('Day 13 solutions:', day13())
-  # print('Day 14 solutions:', day14())
+  # print('Day 13 solutions:', day13())
+  print('Day 14 solutions:', day14())
   # print('Day 15 solutions:', day15())
   # print('Day 16 solutions:', day16())
   # print('Day 17 solutions:', day17())
