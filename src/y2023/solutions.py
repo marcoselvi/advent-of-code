@@ -600,6 +600,7 @@ def day14():
         return move_rocks(i+1, column[:i] + 'O' + column[i+1:j+i+1] + '.' + column[j+i+2:])
     return move_rocks(i+1, column)
 
+  @memoise
   def move_rocks(i, column):
     if i >= len(column):
       return column
@@ -626,6 +627,7 @@ def day14():
     def flip(pattern):
       return tuple(map(lambda p: ''.join(reversed(p)), pattern))
 
+    @memoise
     def cycle_rocks(d, pattern):
       def cycle_step(lines):
         return tuple(move_rocks(0, line) for line in lines)
