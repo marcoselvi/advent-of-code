@@ -654,11 +654,31 @@ def day14():
 
 def day15():
 
+  rows = tuple(r.strip() for r in get_rows('data/y2023/day15.hash.txt'))
+
+  def hash(s):
+    def hash_step(h, ch):
+      return (h + ord(ch)) * 17 % 256
+    return fnt.reduce(hash_step, s, 0)
+
   def p1():
-    pass
+    return sum(hash(seq) for seq in rows[0].split(','))
 
   def p2():
-    pass
+    def process_lens(boxes, lens):
+      if lens.endswith('-'):
+        label = lens[:-1]
+        box = hash(label)
+        return boxes | ({box: tuple((l, f) for l, f in boxes[box] if l != label)} if box in boxes else {})
+      label, focus = lens.split('=')
+      box = hash(label)
+      if box not in boxes:
+        return boxes | {box: ((label, int(focus)),)}
+      if label in list(map(fst, boxes[box])):
+        return boxes | {box: tuple((l, int(focus) if l == label else f) for l, f in boxes[box])}
+      return boxes | {box: boxes[box] + ((label, int(focus)),)}
+    boxes = fnt.reduce(process_lens, rows[0].split(','), {})
+    return sum((box+1) * (i+1) * (f) for box, lenses in boxes.items() for i, (_, f) in enumerate(lenses))
 
   return p1(), p2()
 
@@ -787,8 +807,8 @@ if __name__ == '__main__':
   # print('Day 11 solutions:', day11())
   # print('Day 12 solutions:', day12())
   # print('Day 13 solutions:', day13())
-  print('Day 14 solutions:', day14())
-  # print('Day 15 solutions:', day15())
+  # print('Day 14 solutions:', day14())
+  print('Day 15 solutions:', day15())
   # print('Day 16 solutions:', day16())
   # print('Day 17 solutions:', day17())
   # print('Day 18 solutions:', day18())
