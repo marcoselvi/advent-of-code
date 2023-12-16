@@ -6,6 +6,7 @@ import hashlib
 import itertools as itt
 import json
 import math
+import re
 
 from .. import utils
 
@@ -275,12 +276,42 @@ def day12(lines):
 
 def day13(lines):
   """Solution to https://adventofcode.com/2015/day/13."""
-  pass
+  def parse_line(line):
+    m = re.match(r"(\w+) would (\w+) (\d+) happiness units by sitting next to (\w+)\.", line)
+    return m.group(1), m.group(4), (-1 if m.group(2) == 'lose' else 1) * int(m.group(3))
+  def happiness(table, guests):
+    return sum(table[(ga, gb)] + table[(gb, ga)] for ga, gb in zip(guests, guests[1:] + (guests[0],)))
+  def table_happiness(table):
+    guests = {ga for ga, _ in table.keys()}
+    return max(happiness(table, ring) for ring in itt.permutations(guests))
+  table = {(ga, gb): happy for ga, gb, happy in map(parse_line, lines)}
+  part1 = table_happiness(table)
+  part2 = table_happiness(table | {('Me', ga): 0 for ga, _ in table.keys()} | {(ga, 'Me'): 0 for ga, _ in table.keys()})
+  return part1, part2
 
 
 def day14(lines):
   """Solution to https://adventofcode.com/2015/day/14."""
-  pass
+  T = 2503
+  def parse_line(line):
+    m = re.match(r"(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds\.", line)
+    return m.group(1), int(m.group(2)), int(m.group(3)), int(m.group(4))
+  def distance(name_speed_runtime_resttime):
+    name, speed, runtime, resttime = name_speed_runtime_resttime
+    d, c, r = 0, T, 'run'
+    while c > 0:
+      if r == 'run':
+        d += speed * min(runtime, c)
+        c -= runtime
+      else:
+        c -= resttime
+      r = 'run' if r == 'rest' else 'rest'
+    return name, d
+  distances = sorted(map(utils.compose(distance, parse_line), lines), key=utils.snd)
+  part1 = distances[-1][1]
+  # def race(all_reindeers):
+  part2 = None
+  return part1, part2
 
 
 def day15(lines):

@@ -1,22 +1,22 @@
-"""Utils for Advent of Code solutions."""
+"""Utils for Advent of Code."""
 
 import functools as fnt
 import itertools
 import os
 
 
-def raise_(err, msg=''):
-  raise err(msg)
-
-
 def daypath(year, day):
   wd = os.getcwd()
-  return f'src/{year}/{day}.txt'
+  return f'data/y{year}/{day}.txt'
 
 
 def runday(dayfn, year, day):
   with open(daypath(year, day), 'r') as f:
     return dayfn([l.strip() for l in f.readlines()])
+
+
+def raise_(err, msg=''):
+  raise err(msg)
 
 
 def conspairs(xs):
@@ -33,6 +33,14 @@ def fst(xs):
 
 def snd(xs):
   return xs[1]
+
+
+def join(xss):
+  return [x for xs in xss for x in xs]
+
+
+def transpose_strs(xs):
+  return tuple(''.join(x) for x in zip(*xs))
 
 
 def compose(f, g):
@@ -57,11 +65,9 @@ def map_accum(f, xs, z):
 def memoise(f):
   memo = {}
   def memoised_f(*args):
-    if args in memo:
-      return memo[args]
-    y = f(*args)
-    memo[args] = y
-    return y
+    if args not in memo:
+      memo[args] = f(*args)
+    return memo[args]
   return memoised_f
 
 
