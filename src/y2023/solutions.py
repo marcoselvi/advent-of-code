@@ -685,11 +685,49 @@ def day15():
 
 def day16():
 
+  rows = tuple(r.strip() for r in get_rows('data/y2023/day16.txt'))
+  nodes = {(i, j): ch for j, row in enumerate(rows) for i, ch in enumerate(row)}
+  reflections = {('\\', 'd'): 'r',
+                 ('\\', 'u'): 'l',
+                 ('\\', 'r'): 'd',
+                 ('\\', 'l'): 'u',
+                 ('/', 'd'): 'l',
+                 ('/', 'u'): 'r',
+                 ('/', 'r'): 'u',
+                 ('/', 'l'): 'd'}
+
+  def move(pos, d):
+    x, y = pos
+    return (x+1, y) if d == 'r' else (x-1, y) if d == 'l' else (x, y-1) if d == 'u' else (x, y+1)
+
+  def update(path):
+    p, d = path
+    if nodes[p] == '.' or (nodes[p] == '|' and d in {'u', 'd'}) or (nodes[p] == '-' and d in {'l', 'r'}):
+      return [(move(p, d), d)]
+    if nodes[p] == '|' and d in {'l', 'r'}:
+      return [(move(p, 'u'), 'u'), (move(p, 'd'), 'd')]
+    if nodes[p] == '-' and d in {'u', 'd'}:
+      return [(move(p, 'l'), 'l'), (move(p, 'r'), 'r')]
+    d = reflections[(nodes[p], d)]
+    return [(move(p, d), d)]
+
+  def light(start):
+    paths, seen = [start], {start}
+    while paths:
+      paths = [p_d for path in paths for p_d in update(path) if p_d[0] in nodes and p_d not in seen]
+      seen |= set(paths)
+    return len({p for p, _ in seen})
+
   def p1():
-    pass
+    return light(((0, 0), 'r'))
 
   def p2():
-    pass
+    x_max, y_max = max(nodes.keys())
+    edges = ([((0, j), 'r') for j in range(y_max+1)] +
+             [((x_max, j), 'l') for j in range(y_max+1)] +
+             [((i, 0), 'd') for i in range(x_max+1)] +
+             [((i, y_max), 'u') for i in range(x_max+1)])
+    return max(light(start) for start in edges)
 
   return p1(), p2()
 
@@ -808,8 +846,8 @@ if __name__ == '__main__':
   # print('Day 12 solutions:', day12())
   # print('Day 13 solutions:', day13())
   # print('Day 14 solutions:', day14())
-  print('Day 15 solutions:', day15())
-  # print('Day 16 solutions:', day16())
+  # print('Day 15 solutions:', day15())
+  print('Day 16 solutions:', day16())
   # print('Day 17 solutions:', day17())
   # print('Day 18 solutions:', day18())
   # print('Day 19 solutions:', day19())
