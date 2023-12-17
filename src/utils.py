@@ -5,6 +5,9 @@ import itertools
 import os
 
 
+bind = fnt.partial
+
+
 def daypath(year, day):
   wd = os.getcwd()
   return f'data/y{year}/{day}.txt'
@@ -47,6 +50,14 @@ def compose(f, g):
   def h(*args):
     return f(g(*args))
   return h
+
+
+def minval_keyval(d):
+  m, kk = None, None
+  for k, v in d.items():
+    m = v if not m else min(m, v)
+    kk = k if min(m, v) == v else kk
+  return kk, m
 
 
 def group_sndbyfst(xs):

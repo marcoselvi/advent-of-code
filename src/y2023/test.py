@@ -74,7 +74,7 @@ def test_day16():
 
 
 def test_day17():
-  assert utils.runday(solve.day17, '2023', 'day17') == ()
+  assert utils.runday(solve.day17, '2023', 'day17') == (638, 748)
 
 
 def test_day18():

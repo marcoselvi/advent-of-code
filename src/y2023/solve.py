@@ -1,5 +1,6 @@
 from collections import Counter
 import math
+import operator as op
 import re
 import sys
 
@@ -652,7 +653,56 @@ def day16(lines):
 
 
 def day17(lines):
-  pass
+  blocks = {(i, j): int(n) for j, line in enumerate(lines) for i, n in enumerate(line)}
+  max_x, max_y = max(map(ut.fst, blocks)), max(map(ut.snd, blocks))
+  fullvisit = max_x * max_y
+
+  directions = {(1, 0), (-1, 0), (0, 1), (0, -1)}
+
+  def move(x_y, dd):
+    return tuple(p + d for p, d in zip(x_y, dd))
+
+  def reverse(dd):
+    return tuple(-1*p for p in dd)
+
+  def queue_pop(queue):
+    return queue[1:], queue[0]
+
+  def queue_push(queue, x):
+    for i, (c, y) in enumerate(queue):
+      if c > x[0]:
+        return queue[:i] + [x] + queue[i:]
+    return queue + [x]
+
+  def traverse(min_dist, max_dist):
+    queue = [(0, (0, 0, (0, 0)))]
+    seen = set()
+    costs = {}
+    while queue:
+      queue, (cost, (x, y, d)) = queue_pop(queue)
+      if (x, y) == (max_x, max_y):
+        return cost
+      if (x, y, d) in seen:
+        continue
+      seen.add((x, y, d))
+      for dd in directions - {d, reverse(d)}:
+        cc = 0
+        for dist in range(1, max_dist + 1):
+          xx, yy = move((x, y), tuple(map(ut.bind(op.mul, dist), dd)))
+          if (xx, yy) in blocks:
+            cc += blocks[(xx, yy)]
+            if dist < min_dist:
+              continue
+            nc = cost + cc
+            if costs.get((xx, yy, dd), 1e100) <= nc:
+              continue
+            costs[(xx, yy, dd)] = nc
+            queue = queue_push(queue, (nc, (xx, yy, dd)))
+
+  p1 = traverse(1, 3)
+  p2 = traverse(4, 10)
+
+  return p1, p2
 
 
 def day18(lines):
