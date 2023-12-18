@@ -8,7 +8,7 @@ from . import y2020
 from . import y2023
 
 
-sys.setrecursionlimit(100000)
+sys.setrecursionlimit(10000000)
 
 
 YEAR_SELECTOR = {

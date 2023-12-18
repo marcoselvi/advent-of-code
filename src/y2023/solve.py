@@ -674,7 +674,7 @@ def day17(lines):
         return queue[:i] + [x] + queue[i:]
     return queue + [x]
 
-  def traverse(min_dist, max_dist):
+  def crucible(min_dist, max_dist):
     queue = [(0, (0, 0, (0, 0)))]
     seen = set()
     costs = {}
@@ -699,14 +699,60 @@ def day17(lines):
             costs[(xx, yy, dd)] = nc
             queue = queue_push(queue, (nc, (xx, yy, dd)))
 
-  p1 = traverse(1, 3)
-  p2 = traverse(4, 10)
+  p1 = crucible(1, 3)
+  p2 = crucible(4, 10)
 
   return p1, p2
 
 
 def day18(lines):
-  pass
+
+  def move(x_y, dd, s):
+    return tuple(p + d*s for p, d in zip(x_y, dd))
+
+  dirs = {'R': (1, 0), 'L': (-1, 0), 'D': (0, 1), 'U': (0, -1)}
+
+  def trace_trench(trenches):
+
+    def make_edge(pos_edges, d_s):
+      (pos, edges), (dd, step) = pos_edges, d_s
+      newpos = move(pos, dirs[dd], step)
+      return newpos, edges + [(pos, newpos)]
+
+    _, edges = fnt.reduce(make_edge, trenches, ((0, 0), []))
+    xmin, ymin = min(min(x1, x2) for (x1, y1), (x2, y2) in edges), min(min(y1, y2) for (x1, y1), (x2, y2) in edges)
+    # recast so xmin, ymin == 0, 0
+    return [((x1 - xmin, y1 - ymin), (x2 - xmin, y2 - ymin)) for (x1, y1), (x2, y2) in edges]
+
+  def suttended(edges):
+    ymax = max(max(y1, y2) for (x1, y1), (x2, y2) in edges)
+    h_edges = [(xy1, xy2) for xy1, xy2 in edges if xy1[1] == xy2[1]]
+    return sum((x2 - x1) * (ymax - y1) for (x1, y1), (x2, _) in h_edges)
+
+  def perimeter(edges):
+    p = 0
+    for (x1, y1), (x2, y2) in edges:
+      p += abs(x1 - x2) + abs(y1 - y2)
+    return p
+
+  def p1_readline(l):
+    d, s, _ = l.split(' ')
+    return d, int(s)
+
+  p1_edges = trace_trench(list(map(p1_readline, lines)))
+
+  p1 = suttended(p1_edges) + perimeter(p1_edges) // 2 + 1
+
+  def p2_readline(l):
+    rgb = re.match(r'.+\(\#(.+)\)', l).group(1)
+    return {'0': 'R', '1': 'D', '2': 'L', '3': 'U'}[rgb[-1]], int(rgb[:-1], 16)
+
+  p2_edges = trace_trench(list(map(p2_readline, lines)))
+
+  p2 = suttended(p2_edges) + perimeter(p2_edges) // 2 + 1
+
+  return p1, p2
+
 
 
 def day19(lines):
