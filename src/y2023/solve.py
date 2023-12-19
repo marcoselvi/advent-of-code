@@ -756,8 +756,80 @@ def day18(lines):
 
 
 def day19(lines):
-  pass
+  def flow_name(f):
+    return re.match(r'(.+)\{.+\}', f.strip()).group(1)
+  def apply_op(o, v, c):
+    return {'>=': op.ge, '<=': op.le, '>': op.gt, '<': op.lt}[o](v, c)
+  def apply_rule(rule, p):
+    return rule == 'all' or apply_op(rule[1], p[rule[0]], rule[2])
+  def flow_rule(r):
+    def parse_cond(c):
+      m = re.match(r'(\w)([<>])(\d+)', c)
+      return m.group(1), m.group(2), int(m.group(3))
+    if ':' in r:
+      cond, dest = r.split(':')
+      return (parse_cond(cond), dest)
+    return ('all', r)
+  def flow_rules(f):
+    return [flow_rule(r) for r in re.match(r'.+{(.+)}', f.strip()).group(1).split(',')]
+  def parse_part(p):
+    m = re.match(r'\{x=(\d+),m=(\d+),a=(\d+),s=(\d+)\}', p)
+    return {'x': int(m.group(1)), 'm': int(m.group(2)), 'a': int(m.group(3)), 's': int(m.group(4))}
+  def maybe_accept(flows, part, f):
+    if f == 'A':
+      return part
+    if f == 'R':
+      return None
+    for rule, dest in flows[f]:
+      if apply_rule(rule, part):
+        return maybe_accept(flows, part, dest)
+  flows_str, parts_str = '\n'.join(lines).split('\n\n')
+  flows = {flow_name(f): flow_rules(f) for f in flows_str.split('\n')}
+  parts = [parse_part(p) for p in parts_str.split('\n')]
+  accepted = list(filter(None, (maybe_accept(flows, part, 'in') for part in parts)))
 
+  p1 = sum(sum(p.values()) for p in accepted)
+
+  def split_gt(k, c, r):
+    if apply_op('>', r[k][0], c):
+      return r, None
+    if apply_op('<=', r[k][1], c):
+      return None, r
+    return r | {k: (c+1, r[k][1])}, r | {k: (r[k][0], c)}
+  def split_lt(k, c, r):
+    if apply_op('<', r[k][1], c):
+      return r, None
+    if apply_op('>=', r[k][0], c):
+      return None, r
+    return r | {k: (r[k][0], c-1)}, r | {k: (c, r[k][1])}
+  def split_range(rule, r):
+    if rule == 'all':
+      return r, None
+    k, o, c = rule
+    return split_lt(k, c, r) if o == '<' else split_gt(k, c, r)
+  def consume_flow(accum_r, rule_dest):
+    (accum, r), (rule, dest) = accum_r, rule_dest
+    if not r:
+      return accum
+    catch, r = split_range(rule, r)
+    return accum + (range_partition(flows, catch, dest) if catch else []), r
+  def range_partition(flows, ran, f):
+    if f == 'A':
+      print([ran])
+      return [ran]
+    if f == 'R':
+      print([None])
+      return [None]
+    print(flows[f], fnt.reduce(consume_flow, flows[f], ([], ran))[0])
+    return fnt.reduce(consume_flow, flows[f], ([], ran))[0]
+
+  p2 = sum(fnt.reduce(op.mul, [(t - b) for b, t in r.values()], 1) for r in
+           filter(None,
+                  range_partition(
+                    flows, {'x': (1, 4000), 'm': (1, 4000),
+                            'a': (1, 4000), 's': (1, 4000)}, 'in')))
+
+  return p1, p2
 
 def day20(lines):
   pass
