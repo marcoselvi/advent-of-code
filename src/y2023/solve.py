@@ -807,27 +807,22 @@ def day19(lines):
       return r, None
     k, o, c = rule
     return split_lt(k, c, r) if o == '<' else split_gt(k, c, r)
-  def consume_flow(accum_r, rule_dest):
-    (accum, r), (rule, dest) = accum_r, rule_dest
-    if not r:
-      return accum
+  def consume_flow(caught_r, rule_dest):
+    (caught, r), (rule, dest) = caught_r, rule_dest
     catch, r = split_range(rule, r)
-    return accum + (range_partition(flows, catch, dest) if catch else []), r
+    return caught + (range_partition(flows, catch, dest) if catch else []), r
   def range_partition(flows, ran, f):
     if f == 'A':
-      print([ran])
       return [ran]
     if f == 'R':
-      print([None])
       return [None]
-    print(flows[f], fnt.reduce(consume_flow, flows[f], ([], ran))[0])
-    return fnt.reduce(consume_flow, flows[f], ([], ran))[0]
+    out, r = fnt.reduce(consume_flow, flows[f], ([], ran))
+    return out
 
-  p2 = sum(fnt.reduce(op.mul, [(t - b) for b, t in r.values()], 1) for r in
-           filter(None,
-                  range_partition(
-                    flows, {'x': (1, 4000), 'm': (1, 4000),
-                            'a': (1, 4000), 's': (1, 4000)}, 'in')))
+  allowed_ranges = list(filter(
+      None, range_partition(
+        flows, {'x': (1, 4000), 'm': (1, 4000), 'a': (1, 4000), 's': (1, 4000)}, 'in')))
+  p2 = sum(fnt.reduce(op.mul, [(t - b + 1) for b, t in r.values()], 1) for r in allowed_ranges)
 
   return p1, p2
 
