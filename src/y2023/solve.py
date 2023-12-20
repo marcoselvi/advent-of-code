@@ -924,7 +924,6 @@ def day20(lines):
   return p1, p2
 
 
-
 def day21(lines):
   """https://adventofcode.com/2023/day/21"""
   pass
