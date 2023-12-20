@@ -11,6 +11,7 @@ from .. import utils as ut
 
 
 def day1(lines):
+  """https://adventofcode.com/2023/day/1"""
 
   WORD_TO_DIGIT_MAP = {
       'zero': '0',
@@ -46,6 +47,7 @@ def day1(lines):
 
 
 def day2(lines):
+  """https://adventofcode.com/2023/day/2"""
 
   games = lines
 
@@ -77,6 +79,7 @@ def day2(lines):
 
 
 def day3(lines):
+  """https://adventofcode.com/2023/day/3"""
 
   def near(xs_y, sx_sy):
     (xs, y), (sx, sy) = xs_y, sx_sy
@@ -131,6 +134,7 @@ def day3(lines):
 
 
 def day4(lines):
+  """https://adventofcode.com/2023/day/4"""
 
   def points(line):
     def split(s):
@@ -163,6 +167,7 @@ def day4(lines):
 
 
 def day5(lines):
+  """https://adventofcode.com/2023/day/5"""
 
   def map_name(map_str):
     return map_str.split(':')[0].split(' ')[0].strip()
@@ -209,6 +214,7 @@ def day5(lines):
 
 
 def day6(lines):
+  """https://adventofcode.com/2023/day/6"""
 
   def scores(time):
     return [n * (time - n) for n in range(time)]
@@ -235,6 +241,7 @@ def day6(lines):
 
 
 def day7(lines):
+  """https://adventofcode.com/2023/day/7"""
 
   def winnings(hand_sorting, lines):
     return sum((i+1)*int(bet) for i, (hand, bet)
@@ -284,6 +291,7 @@ def day7(lines):
 
 
 def day8(lines):
+  """https://adventofcode.com/2023/day/8"""
 
   instructions = lines[0]
   graph = {node.strip(): tuple(left_right.strip().strip('(').strip(')').split(', '))
@@ -317,6 +325,7 @@ def day8(lines):
 
 
 def day9(lines):
+  """https://adventofcode.com/2023/day/9"""
 
   parsed_lines = [list(map(int, line.split(' '))) for line in lines]
 
@@ -335,6 +344,7 @@ def day9(lines):
 
 
 def day10(lines):
+  """https://adventofcode.com/2023/day/10"""
 
   def north(x_y):
     x, y = x_y
@@ -420,6 +430,7 @@ def day10(lines):
 
 
 def day11(lines):
+  """https://adventofcode.com/2023/day/11"""
 
   def expand_universe(factor, gxs, empty_lines, empty_colums):
     def expand_x(gxs, empty_x):
@@ -446,6 +457,7 @@ def day11(lines):
 
 
 def day12(lines):
+  """https://adventofcode.com/2023/day/12"""
 
   lines = [l.split(' ') for l in lines]
 
@@ -473,6 +485,7 @@ def day12(lines):
 
 
 def day13(lines):
+  """https://adventofcode.com/2023/day/13"""
 
   transpose = ut.memoise(ut.transpose_strs)
 
@@ -512,6 +525,7 @@ def day13(lines):
 
 
 def day14(lines):
+  """https://adventofcode.com/2023/day/14"""
 
   transpose = ut.memoise(ut.transpose_strs)
 
@@ -576,6 +590,7 @@ def day14(lines):
 
 
 def day15(lines):
+  """https://adventofcode.com/2023/day/15"""
 
   lines = tuple(lines)
 
@@ -606,6 +621,7 @@ def day15(lines):
 
 
 def day16(lines):
+  """https://adventofcode.com/2023/day/16"""
 
   nodes = {(i, j): ch for j, line in enumerate(lines) for i, ch in enumerate(line)}
   reflections = {('\\', 'd'): 'r',
@@ -653,6 +669,8 @@ def day16(lines):
 
 
 def day17(lines):
+  """https://adventofcode.com/2023/day/17"""
+
   blocks = {(i, j): int(n) for j, line in enumerate(lines) for i, n in enumerate(line)}
   max_x, max_y = max(map(ut.fst, blocks)), max(map(ut.snd, blocks))
   fullvisit = max_x * max_y
@@ -706,6 +724,7 @@ def day17(lines):
 
 
 def day18(lines):
+  """https://adventofcode.com/2023/day/18"""
 
   def move(x_y, dd, s):
     return tuple(p + d*s for p, d in zip(x_y, dd))
@@ -756,6 +775,8 @@ def day18(lines):
 
 
 def day19(lines):
+  """https://adventofcode.com/2023/day/19"""
+
   def flow_name(f):
     return re.match(r'(.+)\{.+\}', f.strip()).group(1)
   def apply_op(o, v, c):
@@ -827,6 +848,7 @@ def day19(lines):
   return p1, p2
 
 def day20(lines):
+  """https://adventofcode.com/2023/day/20"""
 
   def build_graph(lines):
     types, outs = {}, {}
@@ -904,20 +926,25 @@ def day20(lines):
 
 
 def day21(lines):
+  """https://adventofcode.com/2023/day/21"""
   pass
 
 
 def day22(lines):
+  """https://adventofcode.com/2023/day/22"""
   pass
 
 
 def day23(lines):
+  """https://adventofcode.com/2023/day/23"""
   pass
 
 
 def day24(lines):
+  """https://adventofcode.com/2023/day/24"""
   pass
 
 
 def day25(lines):
+  """https://adventofcode.com/2023/day/25"""
   pass
