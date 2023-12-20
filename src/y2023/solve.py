@@ -827,7 +827,80 @@ def day19(lines):
   return p1, p2
 
 def day20(lines):
-  pass
+
+  def build_graph(lines):
+    types, outs = {}, {}
+    maps = [(tn, dest.split(', ')) for tn, dest in map(lambda l: l.split(' -> '), lines)]
+    for tn, to in maps:
+      t, n = ('b', tn) if tn == 'broadcaster' else (tn[0], tn[1:])
+      types |= {n: t}
+      outs |= {n: to}
+    ins = {n: tuple(n_i for n_i, dest in outs.items() if n in dest) for n in types}
+    return {n: (types[n], ins[n], outs[n]) for n in types} | {'button': ('', (), ('broadcaster',))}
+
+  def initialise_state(graph):
+    def init_state(t, ins):
+      return 0 if t == '%' else (0,)*len(ins) if t == '&' else None
+    return {n: init_state(t, ins) for n, (t, ins, _) in graph.items()}
+
+  def send(graph, n, p):
+    return [(n, nn, p, pulse(n, nn, p)) for nn in graph[n][2]]
+
+  @ut.curry(3)
+  def pulse(s, n, p, graph, state):
+    if n not in graph:
+      return 0, state, []
+    if graph[n][0] == 'b':
+      return p, state, send(graph, n, p)
+    if graph[n][0] == '%':
+      state = state | {n: int(not state[n]) if not p else state[n]}
+      return int(not p and state[n]), state, send(graph, n, int(state[n] and not p)) if not p else []
+    if graph[n][0] == '&':
+      state = state | {n: tuple((p if inp == s else prev_p) for inp, prev_p in zip(graph[n][1], state[n]))}
+      new_p = int(not all(state[n]))
+      return new_p, state, send(graph, n, new_p)
+
+  def p1_evolve_graph(graph, h_l_s):
+    high, low, state = h_l_s
+    low += 1
+    ops = send(graph, 'button', 0)
+    while ops:
+      (_, _, _, o), ops = ops[0], ops[1:]
+      h_l, state, nos = o(graph, state)
+      high, low, ops = high + h_l*len(nos), low + (not h_l)*len(nos), ops + nos
+    return high, low, state
+
+  graph = build_graph(lines)
+
+  high, low, _ = fnt.reduce(lambda h_l_s, _: p1_evolve_graph(graph, h_l_s),
+                            range(1000), (0, 0, initialise_state(graph)))
+
+  p1 = high * low
+
+  def p2_evolve_graph(graph, state):
+    ops = send(graph, 'button', 0)
+    pulses = []
+    while ops:
+      (s, d, p, o), ops = ops[0], ops[1:]
+      _, state, nos = o(graph, state)
+      ops = ops + nos
+      pulses.append((s, d, p))
+    return pulses, state
+
+  state = initialise_state(graph)
+  i = 0
+  rx_sources = {nn: None for n in graph for nn in graph[n][1] if 'rx' in graph[n][2]}
+  while not all(rx_sources.values()):
+    i += 1
+    pulses, state = p2_evolve_graph(graph, state)
+    for (s, d, p) in pulses:
+      if p and s in rx_sources and not rx_sources[s]:
+        rx_sources[s] = i
+
+  p2 = math.lcm(*rx_sources.values())
+
+  return p1, p2
+
 
 
 def day21(lines):

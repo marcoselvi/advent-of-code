@@ -82,11 +82,11 @@ def test_day18():
 
 
 def test_day19():
-  assert utils.runday(solve.day19, '2023', 'day19') == ()
+  assert utils.runday(solve.day19, '2023', 'day19') == (449531, 122756210763577)
 
 
 def test_day20():
-  assert utils.runday(solve.day20, '2023', 'day20') == ()
+  assert utils.runday(solve.day20, '2023', 'day20') == (898731036, 229414480926893)
 
 
 def test_day21():

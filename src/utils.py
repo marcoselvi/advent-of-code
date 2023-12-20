@@ -52,6 +52,16 @@ def compose(f, g):
   return h
 
 
+def curry(n):
+  def curry_n(f):
+    def g(*args):
+      assert len(args) == n, ('Curried %r expecting %d args, got %d (%r)'
+                              % (f, n, len(args), args))
+      return bind(f, *args)
+    return g
+  return curry_n
+
+
 def minval_keyval(d):
   m, kk = None, None
   for k, v in d.items():
