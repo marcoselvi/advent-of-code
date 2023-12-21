@@ -925,8 +925,44 @@ def day20(lines):
 
 
 def day21(lines):
-  """https://adventofcode.com/2023/day/21"""
-  pass
+  """https://adventofcode.com/2023/day/21.
+
+  See https://en.wikipedia.org/wiki/Newton_polynomial
+  """
+
+  def find_start(lines):
+    for j, line in enumerate(lines):
+      for i, ch in enumerate(line):
+        if ch == 'S':
+          return i, j
+
+  start = find_start(lines)
+  plots = {(i, j) for j, line in enumerate(lines)
+                  for i, ch in enumerate(line) if ch in '.S'}
+  maxx, maxy = max(map(ut.fst, plots)), max(map(ut.snd, plots))
+  assert maxx == maxy
+
+  def move(x_y, dd):
+    return tuple(p + d for p, d in zip(x_y, dd))
+
+  dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+  cycle = maxx + 1
+
+  gardens = {start}
+  factors = []
+  for s in range(2 * cycle + cycle // 2 + 1):
+    if s == 64:
+      p1 = len(gardens)
+    if s % cycle == 65:
+      factors += [len(gardens)]
+    gardens = {move(g, dd) for dd in dirs for g in gardens
+               if tuple(map(lambda i: i % cycle, move(g, dd))) in plots}
+
+  c1, c2, c3 = factors
+  n = 26501365 // cycle
+  p2 = c1 + n * (c2 - c1 + (n-1) * (c3 - 2*c2 + c1) // 2)
+
+  return p1, p2
 
 
 def day22(lines):
